@@ -69,6 +69,7 @@ namespace KitchenRiggedUpgrades
             {
                 GameObject appliancePrefab = GameObject.Instantiate(appliance.Prefab);
                 appliancePrefab.transform.SetParent(Container, false);
+                appliancePrefab.transform.Reset();
             }
         }
     }
