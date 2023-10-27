@@ -1,11 +1,12 @@
 ﻿using Kitchen;
 using KitchenData;
 using KitchenMods;
+using Unity.Entities;
 using UnityEngine;
 
 namespace KitchenRiggedUpgrades
 {
-    public class PatchController : GenericSystemBase, IModSystem
+    public class PatchController : GameSystemBase, IModSystem
     {
         static PatchController _instance;
 
@@ -17,6 +18,12 @@ namespace KitchenRiggedUpgrades
 
         protected override void OnUpdate()
         {
+        }
+
+        internal static bool StaticRequire<T>(Entity e, out T comp) where T : struct, IComponentData
+        {
+            comp = default;
+            return _instance?.Require(e, out comp) ?? false;
         }
 
         internal static bool TryUpgrade(CDeskTarget target, float discount)

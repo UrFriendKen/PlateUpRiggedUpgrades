@@ -10,7 +10,7 @@ namespace KitchenRiggedUpgrades
     {
         public const string MOD_GUID = $"IcedMilo.PlateUp.{MOD_NAME}";
         public const string MOD_NAME = "Rigged Upgrades";
-        public const string MOD_VERSION = "0.1.0";
+        public const string MOD_VERSION = "0.1.2";
 
         internal static ViewType UpgradeSelectorViewType = (ViewType)HashUtils.GetInt32HashCode($"{MOD_GUID}:UpgradeSelector");
 

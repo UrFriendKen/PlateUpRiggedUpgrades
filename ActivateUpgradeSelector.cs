@@ -5,6 +5,7 @@ using Unity.Entities;
 
 namespace KitchenRiggedUpgrades
 {
+    [UpdateBefore(typeof(ShowPingedApplianceInfo))]
     [UpdateBefore(typeof(ShowPingedCabinetInfo))]
     public class ActivateUpgradeSelector : ApplianceInteractionSystem, IModSystem
     {

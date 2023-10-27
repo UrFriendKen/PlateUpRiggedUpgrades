@@ -163,10 +163,5 @@ namespace KitchenRiggedUpgrades.Patches
             Main.LogWarning($"{(matches > 0 ? (matches == EXPECTED_MATCH_COUNT ? "Transpiler Patch succeeded with no errors" : $"Completed with {matches}/{EXPECTED_MATCH_COUNT} found.") : "Failed to find match")}");
             return list.AsEnumerable();
         }
-
-        private static string CustomFormat(string format, object o)
-        {
-            return string.Format(format, o?.ToString() ?? "null");
-        }
     }
 }
