@@ -1,80 +1,46 @@
 ﻿using Kitchen;
+using KitchenData;
 using KitchenMods;
 using Unity.Entities;
 
 namespace KitchenRiggedUpgrades
 {
-    public class ManageUpgradeIndicators : IndicatorManager, IModSystem
+    public class ManageUpgradeIndicators : PlayerSpecificUIIndicator<CUpgradeSelector, CUpgradeInfo>, IModSystem
     {
         protected override ViewType ViewType => Main.UpgradeSelectorViewType;
 
-        protected override EntityQuery GetSearchQuery()
+        protected override CUpgradeInfo GetInfo(Entity source, CUpgradeSelector selector, CTriggerPlayerSpecificUI trigger, CPlayer player)
         {
-            return GetEntityQuery(typeof(CBlueprintStore), typeof(CPosition));
+            CUpgradeInfo result = default;
+            result.BlueprintStore = source;
+
+            if (Require(source, out CBlueprintStore blueprintStore) &&
+                GameData.Main.Has<Appliance>(blueprintStore.ApplianceID))
+                result.ApplianceID = blueprintStore.ApplianceID;
+            result.Player = player;
+            result.PlayerEntity = trigger.TriggerEntity;
+            return result;
         }
 
-        protected override bool ShouldHaveIndicator(Entity candidate)
+        protected override bool ShouldDismiss(CUpgradeInfo info)
         {
-            if (Require(candidate, out CHasIndicator comp))
+            if (info.ApplianceID == 0)
+                return true;
+            if (info.ClearPreferredUpgrade)
             {
-                if (!Require(comp.Indicator, out CUpgradeInfo upgradeInfo))
+                if (Has<CPreferredUpgrade>(info.BlueprintStore))
+                    EntityManager.RemoveComponent<CPreferredUpgrade>(info.BlueprintStore);
+            }
+            else if (info.PreferredUpgradeID != 0 &&
+                GameData.Main.TryGet(info.PreferredUpgradeID, out Appliance _, warn_if_fail: true) &&
+                Require(info.BlueprintStore, out CBlueprintStore blueprintStore))
+            {
+                Set(info.BlueprintStore, new CPreferredUpgrade()
                 {
-                    return false;
-                }
-                if (!Has<CAppliance>(upgradeInfo.BlueprintStore) || !Require(upgradeInfo.BlueprintStore, out CBlueprintStore blueprintStore) || !blueprintStore.InUse)
-                {
-                    return false;
-                }
-                return !upgradeInfo.IsComplete;
+                    ApplianceID = info.PreferredUpgradeID
+                });
             }
-            if (!Has<CPosition>(candidate))
-            {
-                return false;
-            }
-            if (!Require(candidate, out CTriggerUpgradeSelector trigger))
-            {
-                return false;
-            }
-            if (!Has<CPlayer>(trigger.TriggerEntity))
-            {
-                return false;
-            }
-            if (!trigger.IsTriggered)
-            {
-                return false;
-            }
-            trigger.IsTriggered = false;
-            Set(candidate, trigger);
-            return true;
-        }
-
-        protected override Entity CreateIndicator(Entity source)
-        {
-            if (!Require(source, out CPosition position))
-            {
-                return default(Entity);
-            }
-            if (!Require(source, out CBlueprintStore blueprintStore))
-            {
-                return default(Entity);
-            }
-            if (!Require(source, out CTriggerUpgradeSelector trigger))
-            {
-                return default(Entity);
-            }
-            if (!Require<CPlayer>(trigger.TriggerEntity, out CPlayer player))
-            {
-                return default(Entity);
-            }
-            Entity entity = base.CreateIndicator(source);
-            base.EntityManager.AddComponentData(entity, new CPosition(position));
-            base.EntityManager.AddComponentData(entity, new CUpgradeInfo
-            {
-                ApplianceID = blueprintStore.ApplianceID,
-                BlueprintStore = source,
-                Player = player
-            });
-            return entity;
+            return base.ShouldDismiss(info);
         }
     }
 }

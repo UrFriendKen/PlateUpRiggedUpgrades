@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Kitchen;
-using MessagePack;
 using System;
 using System.Reflection;
 using Unity.Entities;
@@ -24,15 +23,12 @@ namespace KitchenRiggedUpgrades.Patches
         [HarmonyPrefix]
         static bool OriginalLambdaBody_Prefix(ref Entity desk, ref CDeskTarget target, ref CTakesDuration duration, ref float ___discount)
         {
-            if (!duration.Active ||
+            return !duration.Active ||
                 duration.Remaining > 0f ||
                 !PatchController.StaticRequire(desk, out CModifyBlueprintStoreAfterDuration improvement) ||
                 !improvement.PerformUpgrade ||
-                !PatchController.TryUpgrade(target, ___discount))
-	{
-                return true;
-            };
-            return false;
+                !PatchController.TryUpgrade(target, ___discount);
+	        
         }
     }
 }

@@ -10,7 +10,7 @@ namespace KitchenRiggedUpgrades
     {
         public const string MOD_GUID = $"IcedMilo.PlateUp.{MOD_NAME}";
         public const string MOD_NAME = "Rigged Upgrades";
-        public const string MOD_VERSION = "0.1.2";
+        public const string MOD_VERSION = "0.1.3";
 
         internal static ViewType UpgradeSelectorViewType = (ViewType)HashUtils.GetInt32HashCode($"{MOD_GUID}:UpgradeSelector");
 
@@ -33,6 +33,8 @@ namespace KitchenRiggedUpgrades
                 container.transform.localRotation = Quaternion.identity;
                 container.transform.localScale = Vector3.one * 0.2f;
                 blueprintCabinet.Prefab.AddComponent<PreferredUpgradeView>().Container = container.transform;
+
+                blueprintCabinet.Properties.Add(default(CTriggerPlayerSpecificUI));
             }
         }
 

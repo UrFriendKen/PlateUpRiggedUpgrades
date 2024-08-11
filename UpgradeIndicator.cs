@@ -45,7 +45,7 @@ namespace KitchenRiggedUpgrades
                         ApplianceID = info.ApplianceID
                     });
 
-                    ResponseData result = default(ResponseData);
+                    ResponseData result = default;
                     if (ApplyUpdates(view.Identifier,
                         delegate (ResponseData response)
                         {
@@ -53,24 +53,9 @@ namespace KitchenRiggedUpgrades
                         }, only_final_update: true))
                     {
                         info.IsComplete = result.IsComplete;
+                        info.ClearPreferredUpgrade = result.ClearPreferredUpgrade;
+                        info.PreferredUpgradeID = result.UpgradedApplianceID;
                         Set(entity, info);
-                        if (result.ClearPreferredUpgrade)
-                        {
-                            if (Has<CPreferredUpgrade>(info.BlueprintStore))
-                            {
-                                EntityManager.RemoveComponent<CPreferredUpgrade>(info.BlueprintStore);
-                            }
-                        }
-                        else if (result.UpgradedApplianceID != 0 &&
-                            GameData.Main.TryGet(result.UpgradedApplianceID, out Appliance _, warn_if_fail: true) &&
-                            Require(info.BlueprintStore, out CBlueprintStore blueprintStore))
-                        {
-                            blueprintStore.ApplianceID = result.UpgradedApplianceID;
-                            Set(info.BlueprintStore, new CPreferredUpgrade()
-                            {
-                                ApplianceID = result.UpgradedApplianceID
-                            });
-                        }
                     }
                 }
             }

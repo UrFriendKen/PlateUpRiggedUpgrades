@@ -17,7 +17,7 @@ namespace KitchenRiggedUpgrades
             protected override void Initialise()
             {
                 base.Initialise();
-                Views = GetEntityQuery(typeof(CAppliance), typeof(CLinkedView), typeof(CBlueprintStore), typeof(CCabinetModifier));
+                Views = GetEntityQuery(typeof(CUpgradeSelector), typeof(CLinkedView), typeof(CCabinetModifier));
             }
 
             protected override void OnUpdate()
