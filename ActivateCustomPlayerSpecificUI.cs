@@ -40,6 +40,11 @@ namespace KitchenRiggedUpgrades
             {
                 return false;
             }
+            if (Has<CPlayerSpecificUIRequiresUpgrader>(data.Target) &&
+                (!Require(data.Target, out CCabinetModifier modifier) || !modifier.Upgrades))
+            {
+                return false;
+            }
             if (!Require(data.Target, out Editor))
             {
                 return false;

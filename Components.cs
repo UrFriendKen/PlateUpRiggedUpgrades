@@ -24,6 +24,11 @@ namespace KitchenRiggedUpgrades
         public bool OnlyInMode;
     }
 
+    [StructLayout(LayoutKind.Sequential, Size = 1)]
+    public struct CPlayerSpecificUIRequiresUpgrader : IApplianceProperty, IComponentData, IModComponent
+    {
+    }
+
     public struct CUpgradeSelector : IComponentData, IPlayerSpecificUISource, IModComponent
     {
         public Vector3 DrawLocation;

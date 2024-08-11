@@ -8,7 +8,8 @@ namespace KitchenRiggedUpgrades
     public class AttachUpgradeSelectorComponents : RestaurantSystem, IModSystem
     {
         EntityQuery CabinetsWithoutUpgradeSelector;
-        EntityQuery UpgradeSelectorsWithoutRequireHold;
+        EntityQuery UpgradeSelectorsWithoutCustomTrigger;
+        EntityQuery UpgradeSelectorsWithoutRequiresUpgrader;
 
         protected override void Initialise()
         {
@@ -17,9 +18,13 @@ namespace KitchenRiggedUpgrades
                 .All(typeof(CAppliance), typeof(CBlueprintStore), typeof(CCabinetModifier))
                 .None(typeof(CUpgradeSelector)));
 
-            UpgradeSelectorsWithoutRequireHold = GetEntityQuery(new QueryHelper()
+            UpgradeSelectorsWithoutCustomTrigger = GetEntityQuery(new QueryHelper()
                 .All(typeof(CUpgradeSelector))
                 .None(typeof(CCustomTriggerPlayerSpecificUI)));
+
+            UpgradeSelectorsWithoutRequiresUpgrader = GetEntityQuery(new QueryHelper()
+                .All(typeof(CUpgradeSelector))
+                .None(typeof(CPlayerSpecificUIRequiresUpgrader)));
         }
 
         protected override void OnUpdate()
@@ -47,9 +52,9 @@ namespace KitchenRiggedUpgrades
                 }
             }
 
-            if (!UpgradeSelectorsWithoutRequireHold.IsEmpty)
+            if (!UpgradeSelectorsWithoutCustomTrigger.IsEmpty)
             {
-                using NativeArray<Entity> entities = UpgradeSelectorsWithoutRequireHold.ToEntityArray(Allocator.Temp);
+                using NativeArray<Entity> entities = UpgradeSelectorsWithoutCustomTrigger.ToEntityArray(Allocator.Temp);
 
                 for (int i = 0; i < entities.Length; i++)
                 {
@@ -60,6 +65,11 @@ namespace KitchenRiggedUpgrades
                         Mode = InteractionMode.Appliances
                     });
                 }
+            }
+
+            if (!UpgradeSelectorsWithoutRequiresUpgrader.IsEmpty)
+            {
+                EntityManager.AddComponent<CPlayerSpecificUIRequiresUpgrader>(UpgradeSelectorsWithoutRequiresUpgrader);
             }
         }
     }
